@@ -34,7 +34,7 @@ except ImportError:
     from malmopy.visualization import ConsoleVisualizer
 
 from common import parse_clients_args, visualize_training, ENV_AGENT_NAMES, ENV_TARGET_NAMES
-from agent import PigChaseChallengeAgent, FocusedAgent
+from agent import PigChaseChallengeAgent, FocusedAgent, TabularQLearnerAgent
 from environment import PigChaseEnvironment, PigChaseSymbolicStateBuilder
 
 # Enforce path
@@ -73,7 +73,9 @@ def agent_factory(name, role, type, clients, max_epochs, logdir, visualizer):
 
     else:
 
-        if type == 'astar':
+        if type == 'tabq':
+            agent = TabularQLearnerAgent(name, visualizer)
+        elif type == 'astar':
             agent = FocusedAgent(name, ENV_TARGET_NAMES[0])
         else:
             agent = RandomAgent(name, env.available_actions)
@@ -128,8 +130,8 @@ def run_experiment(agents_def):
 
 if __name__ == '__main__':
     arg_parser = ArgumentParser('Pig Chase baseline experiment')
-    arg_parser.add_argument('-t', '--type', type=str, default='astar',
-                            choices=['astar', 'random'],
+    arg_parser.add_argument('-t', '--type', type=str, default='tabq',
+                            choices=['tabq', 'astar', 'random'],
                             help='The type of baseline to run.')
     arg_parser.add_argument('-e', '--epochs', type=int, default=5,
                             help='Number of epochs to run.')
